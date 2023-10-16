@@ -34,11 +34,11 @@ public class TaskController {
         var currentDate = LocalDateTime.now();
         if (currentDate.isAfter(taskModel.getStartAt()) || currentDate.isAfter(taskModel.getEndAt())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("A data de início /data de termino deve ser maior do que a data atual");
+                    .body("A data de início deve ser anterior à data de término");
         }
         if (taskModel.getStartAt().isAfter(taskModel.getEndAt())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("A data de início deve ser menor do que a data de término");
+                    .body("A data de início / data de término deve ser posterior à data atual");
         }
 
         var task = this.taskRepository.save(taskModel);
@@ -65,7 +65,7 @@ public class TaskController {
 
         if (!task.getIdUser().equals(idUser)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Usuário não tem permissão para alterar essa tarefa");
+                    .body("Usuário não tem permissão para alterar esta tarefa");
         }
 
         Utils.copyNonNullProperties(taskModel, task);
