@@ -11,14 +11,14 @@ import org.springframework.beans.BeanWrapperImpl;
 public class Utils {
 
 
-    // quando tem o static não precisa instanciar a classe
+    // Quando tem o static não precisa instanciar a classe
     public static void copyNonNullProperties(Object source, Object target){
         BeanUtils.copyProperties(source, target, getNullPropertyNameStrings(source));
     }
 
-    // Pega propriedades null
+    // Pega as propriedades null
     public static String[] getNullPropertyNameStrings(Object source) {
-        // Beannwrapper -> interface para acessar as propriedades de um objeto e o impl é a implementação dessa interface
+        // BeanWrapper -> interface para acessar as propriedades de um objeto e o impl é a implementação dessa interface
         final BeanWrapper src = new BeanWrapperImpl(source);
 
         PropertyDescriptor[] pds = src.getPropertyDescriptors();

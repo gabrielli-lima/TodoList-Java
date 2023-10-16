@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.gabriellilima.todolist.utils.Utils;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
@@ -33,7 +32,6 @@ public class TaskController {
         taskModel.setIdUser((UUID) idUser);
 
         var currentDate = LocalDateTime.now();
-        // 10/11/2023 Current 10/10/2023 - startAt -> não ser possivel inserir
         if (currentDate.isAfter(taskModel.getStartAt()) || currentDate.isAfter(taskModel.getEndAt())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("A data de início /data de termino deve ser maior do que a data atual");
@@ -54,16 +52,26 @@ public class TaskController {
         return tasks;
     }
 
-
     @PutMapping("/{id}")
-    public TaskModel update(@RequestBody TaskModel taskModel, HttpServletRequest request, @PathVariable UUID id){
+    public ResponseEntity update(@RequestBody TaskModel taskModel, HttpServletRequest request, @PathVariable UUID id) {
         var idUser = request.getAttribute("idUser");
 
         var task = this.taskRepository.findById(id).orElse(null);
 
+        if (task == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Tarefa não encontrada");
+        }
+
+        if (!task.getIdUser().equals(idUser)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Usuário não tem permissão para alterar essa tarefa");
+        }
+
         Utils.copyNonNullProperties(taskModel, task);
 
-        return this.taskRepository.save(task);
+        var taskUpdate = this.taskRepository.save(task);
+        return ResponseEntity.ok().body(taskUpdate);
     }
 
 }

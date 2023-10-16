@@ -14,8 +14,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-// @Component -> essa anotacao serve para o spring saber que ele tem que gerenciar essa classe / é uma classe generica de gerenciamento / @controller tambem tem  @component
-
 @Component
 public class FilterTaskAuth extends OncePerRequestFilter {
 
@@ -32,11 +30,8 @@ public class FilterTaskAuth extends OncePerRequestFilter {
             // Pegar a autenticação (usuario e senha)
             var authorization = request.getHeader("Authorization");
 
-            // substring -> metodo usado para extrair um texto/conteudo
-            // trim -> é para remover os espaços
             var authEncoded = authorization.substring("Basic".length()).trim();
 
-            // array de bytes
             byte[] authDecode = Base64.getDecoder().decode(authEncoded);
 
             var authString = new String(authDecode);
@@ -59,20 +54,14 @@ public class FilterTaskAuth extends OncePerRequestFilter {
                 if (passwordVerify.verified) {
                     // Segue viagem
 
-                    // Vai settar o id usuario / pegar a info de quando ja tam logado e para não ter que ficar passando no body da requisição
                     request.setAttribute("idUser", user.getId());
                     filterChain.doFilter(request, response);
-
                 } else {
                     response.sendError(401);
                 }
-
             }
         } else {
             filterChain.doFilter(request, response);
-
         }
-
     }
-
 }
